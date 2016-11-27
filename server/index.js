@@ -3,5 +3,7 @@ import {startServer} from './src/server';
 
 export const store = makeStore();
 
-startServer(store)
-  .then(() => console.log('server started'));
+
+//	does startServer not return a promise?
+startServer(store);
+//	.then(() => console.log('server started'));

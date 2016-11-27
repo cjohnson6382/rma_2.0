@@ -1,4 +1,4 @@
-import {setEntries, next, restart, vote, INITIAL_STATE} from './core';
+import {startDb, endDb, mutate, INITIAL_STATE} from './core';
 
 export default function (state = INITIAL_STATE, action) {
   switch (action.type) {
