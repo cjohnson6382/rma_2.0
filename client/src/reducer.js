@@ -2,56 +2,52 @@ import {List, Map} from 'immutable';
 
 function cancelHideAutocompletes (state) {
   clearInterval(state.getIn(['ui', 'countdown']));
+	return state;
 }
 
-//  this should not be in a reducer!!!!
 function hideAutocompletes (state, intervalid) {
-	state.setIn(['ui', 'countdown'], intervalid);
+	return state.setIn(['ui', 'countdown'], intervalid);
 }
 
 function getOptions (state, query) {
-  //  this is intercepted and sent to the server
-  console.log(query);
+	return state;
 }
 
 function setAutocompletes (state, array) {
-  state.setIn(['autocompletes', 'options'], List(array));
-  setVis(state, false);
+  return state.setIn(['autocompletes', 'options'], List(array));
 }
 
 function setVis (state, bool) {
-  state.setIn(['ui', 'autocompletes_visible'], bool);
+  return state.setIn(['ui', 'autocompletes_visible'], bool);
 }
 
 function search(state, query) {
-  //  I guess this is where I'd put a loading bar in place of the table that displays the ticket list?
-  console.log('searching the server for tickets; no state change locally');
   return state;
 }
 
-//  this is to set individual props on the client side; none of this goes server-side until 'save' action is fired
-function setTicketProp(state, prop) {
-  //  prop is a {k:v} pair
-  return state.setIn(['ticket'], prop);
+function setTicketProp(state, name, value) {
+  return state.setIn(['ticket', name], value);
+}
+
+function setAutocompleteField(state, value) {
+	return state.setIn(['ui', 'input'], value);
 }
 
 function saveTicket(state) {
-  console.log('saving ticket to server; set modal to hide');
-  return showModal(false);
+  return state;
 }
 
-//  this function just shows the modal; action creator fetches the server with the ticket ID; server sets state, propagates it down
-function editTicket(state, id) {
-  return showModal(true);
+function getTicket(state) {
+	showModal(state, true);
+  return state;
 }
 
 function showModal(state, bool) {
-  return state.setIn(['ui'], Map('showmodal', bool));
+  return state.setIn(['ui', 'showmodal'], bool);
 }
 
 function setSearch(state, name, value) {
-  //  I don't know if I'm using setIn correctly
-  return state.setIn(['search'], {[name]: value});
+  return state.set('search', value);
 }
 
 function create(state, action) {
@@ -60,22 +56,28 @@ function create(state, action) {
 }
 
 function setState (state, newState) {
-  state.merge(newState);
-  return state;
+  return state.merge(newState);
 }
 
-export default function(state = Map(), action) {
+const INITIAL_STATE = Map({ 
+	ui: Map({ showmodal: false, autocompletes_visible: false, input: ''  }), 
+	autocomplete: Map({ popover_countdown: 0, options: List([]) }) 
+});
+
+export default function(state = INITIAL_STATE, action) {
   switch (action.type) {
   	case 'SET_STATE':
-  	  return setState(state, action);
+  	  return setState(state, action.value);
   	case 'SEARCH_TICKETS':
   	  return search(state, action);
   	case 'SET_PROP':
-  	  return setTicketProp(state, action.value);
+  	  return setTicketProp(state, action.name, action.value);
+		case 'SET_AUTOCOMPLETE_FIELD':
+			return setAutocompleteField(state, action.value);
   	case 'SAVE_TICKET':
   	  return saveTicket(state);
-  	case 'EDIT_TICKET':
-  	  return editTicket(state, action.value);
+  	case 'GET_TICKET':
+  	  return getTicket(state);
   	case 'SHOW_MODAL':
   	  return showModal(state, action.value);
   	case 'SET_SEARCH':
@@ -87,7 +89,7 @@ export default function(state = Map(), action) {
   	case 'HIDE_AUTOCOMPLETES':
   	  return hideAutocompletes(state);
   	case 'AUTOCOMPLETE_OPTIONS':
-  	  return getOptions(state, action.value.query);
+  	  return getOptions(state, action);
   	case 'SET_AUTOCOMPLETES':
   	  return setAutocompletes(state, action.value);
   	case 'AUTOCOMPLETES_VISIBLE':

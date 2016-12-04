@@ -4,7 +4,6 @@ import {connect} from 'react-redux';
 
 import * as actionCreators from '../action_creators';
 
-//  this might be wrong format
 import { Button, Tabs, MenuItem, Checkbox, FormGroup, FormControl, ControlLabel, Form, Col } from 'react-bootstrap';
 
 import AutocompleteField from './AutocompleteField';
@@ -23,17 +22,17 @@ import TabOther from './TabOther';
 
 export const Ticket = React.createClass({
   mixins: [PureRenderMixin],
-  setProp: function (evt) {
-    this.props.setProp(evt.target.attributes.name.value, evt.target.value);
+  setProp: function (prop, value) {
+    this.props.setProp([prop, value]);
   },
 	render: function () {
 		return (
 			<Form horizontal onSubmit={ this.submit } autoComplete="off" >
-				<StaticInputField val={ this.props.ticket['id'] } name='id' type='text' />
-				<StaticInputField val={this.props.ticket['date']} name='date' type='date' />
-				<SelectField  {...this.props} data={ { controlId: "typeSelect", name: "type", options: [
+				<StaticInputField val={ this.props.ticket.get('id') } name='id' type='text' />
+				<StaticInputField val={ this.props.ticket.get('date')} name='date' type='date' />
+				<SelectField  {...this.props} controlId="typeSelect" name="type" options={ [
 				    "DOA - Cross Ship", "Warranty - Repair & Return", "Warranty - Cross Ship", "Non-Warranty - Repair & Return", "Other - See Notes"
-			    ] } }
+			    ] }
 		    />
        	<AutocompleteField {...this.props} name="customer" />
 				<CheckboxField {...this.props} name="dropship" />
@@ -49,15 +48,12 @@ export const Ticket = React.createClass({
           { TabStatus.bind(this)() }
           { TabOther.bind(this)() }
 			 	</Tabs></Col>
-*/
-
 
 function mapStateToProps(state) {
   return {
-    ticket: state.get('ticket'),
     input: state.getIn(['autocomplete', 'input']),
     autocompletes: state.getIn(['autocomplete', 'options']),
-    popover: state.getIn(['autocomplete', 'popover-countdown']),
+    popover: state.getIn(['autocomplete', 'popover_countdown']),
     autocompletes_visible: state.getIn(['ui', 'autocompletes_visible'])
   }
 }
@@ -77,3 +73,5 @@ export const TicketContainer = connect(
 //    you can return the value that's stored in teh state and use that as the value, cause that's mutable, right?
 
 //  the placeholder is just the id with the first letter capitalized and any spaces replaced by dashes
+
+*/

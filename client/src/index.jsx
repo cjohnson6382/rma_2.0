@@ -12,7 +12,7 @@ import remoteActionMiddleware from './remote_action_middleware';
 
 import App from './components/App';
 import {TicketListContainer} from './components/TicketList';
-import {TicketContainer} from './components/Ticket';
+//	import {TicketContainer} from './components/Ticket';
 
 
 const socket = io('http://cjohnson.ignorelist.com:8090');
@@ -27,14 +27,14 @@ store.dispatch(search());
 
 
 socket.on('state', state => {
-		console.log('got state from server', state);
+		console.log('received state from server: ', state);
  	 	store.dispatch(setState(state));
 	}
 );
 
+  //	<Route path="/ticket" component={TicketContainer} />
 const routes = <Route component={App}>
   <Route path="/" component={TicketListContainer} />
-  <Route path="/ticket" component={TicketContainer} />
 </Route>;
 
 ReactDOM.render(

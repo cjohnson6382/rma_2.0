@@ -13,14 +13,14 @@ export function startServer(store) {
       store.subscribe(
         () => {	
 					io.emit('state', store.getState());
-					console.log('store state after search fires: ', store.getState());
+					console.log('store state after emit: ', store.getState());
 				}
       );
     
       io.on('connection', (socket) => {
-				console.log('initial state of store: ', store.getState().toJS());
         socket.emit('state', store.getState().toJS());
         socket.on('action', (action) => {
+					//	console.log('server received an action: ', action);
           if (action.meta.db) {
 						store.dispatch(dbFetcher(dbHandle)(action.type)(action));
           } else {

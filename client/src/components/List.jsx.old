@@ -15,11 +15,12 @@ import ButtonGrid from './ButtonGrid';
 export const TicketList = React.createClass({
   mixins: [PureRenderMixin],
   getList: function () {
-    return this.props.ticketlist || {};
+    return this.props.ticket_list || [];
   },
-
   buildList: function () {
-    const ticketJst = this.getList().map((ticket) => {
+		console.log(this.getList());
+		let tics = this.getList();
+    const ticketJst = this.props.ticket_list.map((ticket) => {
       //  shouldn't modify the date here if I can avoid it; date should be stored in ISO format
 			let date = new Date(ticket.date).toISOString().substring(0, 10);
       return (
@@ -60,7 +61,7 @@ function mapStateToProps(state) {
   return {
     ticket: state.get('ticket'),
     ui: state.get('ui'),
-    ticket-list: state.get('ticket-list')
+    ticket_list: state.get('ticket_list')
   };
 }
 

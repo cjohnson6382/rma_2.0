@@ -1,28 +1,39 @@
 import React from 'react';
 import PureRenderMixin from 'react-addons-pure-render-mixin';
-//	import classNames from 'classnames'
+import { Table, Modal, Button } from 'react-bootstrap';
 
-import {Table} from 'react-bootstrap';
-
-//	const Table = ReactBootstrap.Table;
+import { Ticket } from './Ticket';
 
 import {connect} from 'react-redux';
 import * as actionCreators from '../action_creators';
 
 import ButtonGrid from './ButtonGrid';
 
-
 export const TicketList = React.createClass({
   mixins: [PureRenderMixin],
   getList: function () {
     return this.props.ticket_list || [];
   },
+	getTicket: function (evt) {
+		evt.preventDefault();
+	
+		this.props.getTicket(evt);
+		this.props.showModal(true);
+	},
+	saveTicket: function () {
+		this.props.saveTicket();
+		this.props.showModal(false);	
+	},
+	hideModal: function () {
+		this.props.showModal(false);
+	},
   buildList: function () {
     const ticketJst = this.getList().map((ticket) => {
-      //  shouldn't modify the date here if I can avoid it; date should be stored in ISO format
+			ticket = ticket.toJS();
+
 			let date = new Date(ticket.date).toISOString().substring(0, 10);
       return (
-        <tr onClick={ this.props.onclick } key={ ticket.id } value={ ticket.id } >
+        <tr onClick={ this.getTicket } key={ ticket.id } value={ ticket.id } >
           <td>{ ticket.id }</td>
           <td>{ ticket.vendor }</td>
           <td>{ ticket.customer }</td>
@@ -33,6 +44,7 @@ export const TicketList = React.createClass({
         </tr>
       );
     });
+		return ticketJst;
   },
   render: function () {
     return (
@@ -49,6 +61,18 @@ export const TicketList = React.createClass({
 	        </tbody>
 	      </Table>
 	     	<ButtonGrid { ...this.props } />
+        <Modal bsSize="large" show={ this.props.showmodal } >
+          <Modal.Header>
+            <Modal.Title>Ticket Properties</Modal.Title>
+          </Modal.Header>
+          <Modal.Body>
+						<Ticket { ...this.props } />
+          </Modal.Body>
+          <Modal.Footer>
+						<Button onClick={ this.saveTicket }>Save</Button>
+            <Button onClick={ this.hideModal }>Cancel</Button>
+          </Modal.Footer>
+        </Modal>
 			</div>
     );
   }
@@ -57,8 +81,12 @@ export const TicketList = React.createClass({
 function mapStateToProps(state) {
   return {
     ticket: state.get('ticket'),
-    ui: state.get('ui'),
-    ticket_list: state.get('ticket_list')
+    showmodal: state.getIn(['ui', 'showmodal']),
+    ticket_list: state.get('ticket_list'),
+		input: state.getIn(['ui', 'input']),
+		autocompletes: state.getIn(['autocomplete', 'options']),
+		popover: state.getIn(['autocomplete', 'countdown']),
+		autocompletes_visible: state.getIn(['ui', 'autocompletes_visible'])
   };
 }
 
