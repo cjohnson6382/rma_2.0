@@ -4,15 +4,15 @@ import PureRenderMixin from 'react-addons-pure-render-mixin';
 import {Popover, Overlay, FormGroup, FormControl, ControlLabel, Col} from 'react-bootstrap';
 
 const CustomPopover = React.createClass({
-  select: function (evt) {
-    this.props.setAutocompleteField(evt.currentTarget.attributes.value.value);
-    //	this.props.setAutocompletes([]);
+	select: function (evt) {
+		this.props.setAutocompleteField(evt.currentTarget.attributes.value.value);
+		//	this.props.setAutocompletes([]);
 		this.props.setVis(false);
-  },
+	},
 	render: function () {
 		let autocompletes = this.props.autocompletes.map((option, index) => {
-  		return ( <div key={ index } name={ this.props.name } value={ option } onClick={ this.select } >{ option }</div> )
-  	});
+			return ( <div key={ index } name={ this.props.name } value={ option } onClick={ this.select } >{ option }</div> )
+		});
 
 		return (
 			<div
@@ -20,13 +20,13 @@ const CustomPopover = React.createClass({
 				style={{
 					position: 'relative',
 					display: 'inline-block',
-          backgroundColor: '#EEE',
-          boxShadow: '0 5px 10px rgba(0, 0, 0, 0.2)',
-          border: '1px solid #CCC',
-          borderRadius: 3,
-          marginLeft: -5,
-          marginTop: 5,
-          padding: 10,
+					backgroundColor: '#EEE',
+					boxShadow: '0 5px 10px rgba(0, 0, 0, 0.2)',
+					border: '1px solid #CCC',
+					borderRadius: 3,
+					marginLeft: -5,
+					marginTop: 5,
+					padding: 10,
 				}}
 			>
 				{ autocompletes }
@@ -37,48 +37,49 @@ const CustomPopover = React.createClass({
 
 export default React.createClass({
 	mixins: [PureRenderMixin],
-	componentDidMount: function () { this.props.setAutocompleteField(this.props.ticket.get(this.props.name)) },
+	componentWillReceiveProps: function () { 
+
+		//	okay, problem is that when the setAutocompleteField fires, it's getting information from an old ticket....
+
+		//	I needed this.props.input in the first place because the server was sending down autocomplete options which reset the ticket state
+		//	I think th best option is to send the server the autocompletefield with every keypress; that simplifies things a lot
+		
+
+		console.log(this.props.setAutocompleteField);
+		this.props.setAutocompleteField(this.props.ticket.get(this.props.name)) 
+		console.log('componentWillReceiveProps fired: ', this.props.ticket.get(this.props.name));
+		setTimeout(() => console.log(this.props.input), 1000);
+	},
 	update: function (evt) {
 		evt.preventDefault();
-		let stored_input = this.props.input;
-
-		if (evt.target.value === '') { this.props.getOptions(this.props.name, evt.target.value) }
-		//	if the new input is different from the old input, get new options
-		else if (!this.props.input.includes(evt.target.value)) { this.props.getOptions(this.props.name, evt.target.value)} 
-		else if (evt.target.value.includes(this.props.input)) {
-			if (this.props.autocompletes.count < 15) {
-      	let newAutocompletes = this.props.autocompletes.filter((item) => { return item.includes(evt.target.value) });
-			})
-			
-
-			console.log('filtering autocomplete results');
-      //  filter existing results
-      let newAutocompletes = this.props.autocompletes.filter((item) => { return item.includes(evt.target.value) });
-			console.log('newAutocompletes', newAutocompletes);	
-      //  filtering returned too few results, and there might be other results in the DB
-      if (this.props.autocompletes.count() > 14 && newAutocompletes.count() < 5) { 
+		if (
+				evt.target.value === '' || 
+				this.props.input && 
+				this.props.input.includes(evt.target.value)
+			) 
+		{ 
+			this.props.setAutocompletes([]);
+		}
+		else {
+			if (evt.target.value.includes(this.props.input) && this.props.autocompletes.count < 15) {
+				console.log('getting to the filter option', this.props.input, evt.target.value);
+				let newAutocompletes = this.props.autocompletes.filter((item) => { 
+					return item.includes(evt.target.value) 
+				});
+				this.props.setAutocompletes(newAutocompletes);
+			} else {
 				this.props.getOptions(this.props.name, evt.target.value); 
 			}
-      else { this.props.setAutocompletes(newAutocompletes) }
-			this.props.setVis(true);
 
-
-		} else if (stored_input.includes(evt.target.value)) {
-			this.props.setVis(false);
-      //  user deleted character; clear results
-      this.props.setAutocompletes([]);
-    } else {
-      //  get new results
-      this.props.getOptions(this.props.name, evt.target.value);
-			this.props.setVis(true);
-    }
-
-		//	this.props.setProp(evt.target.attributes.name.value, evt.target.value);
+			if (this.props.autocompletes.count() > 0) {
+				this.props.setVis(true);
+			}
+		}
 		this.props.setAutocompleteField(evt.target.value);
 	},
-  onKeyPress: function (evt) {
+	onKeyPress: function (evt) {
 		if (evt.charCode == 13) this.props.setAutocompletes([]);
-  },
+	},
 	selectAutocomplete: function (evt) {
 		evt.preventDefault();
 		this.props.setAutocompletes([]);
@@ -86,23 +87,18 @@ export default React.createClass({
 	},
 	cancelHideAutocompletes: function () {
 		console.log('cancelHideAutocompletes');
-	  this.props.cancelHideAutocompletes();
+		this.props.cancelHideAutocompletes();
 	},
 	hideAutocompletes: function () {
-  	let popover = setTimeout(() => {
-  	    this.props.setVis(false);
-  		},
-  		1000
-	  );
-	  this.props.hideAutocompletes(popover);
+		let popover = setTimeout(() => {this.props.setVis(false)}, 1000);
+		this.props.hideAutocompletes(popover);
 	},
-	getVisibility: function () { return this.props.autocompletes_visible },
-  render: function () {
-    return (
+	render: function () {
+		return (
 			<FormGroup controlId={ this.props.name + "Autocomplete" }>
 				<Col componentClass={ ControlLabel } sm={ 2 } >{ this.props.name }:</Col>
-	      <Col sm={ 3 }>
-	    	  <input
+				<Col sm={ 3 }>
+					<input
 						ref="target"
 						name={ this.props.name }
 						type="text"
@@ -122,6 +118,6 @@ export default React.createClass({
 					</Overlay>
 				</Col>
 			</FormGroup>
-    );
-  }
+		);
+	}
 });

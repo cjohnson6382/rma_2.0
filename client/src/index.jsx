@@ -15,7 +15,8 @@ import {TicketListContainer} from './components/TicketList';
 //	import {TicketContainer} from './components/Ticket';
 
 
-const socket = io('http://cjohnson.ignorelist.com:8090');
+//	const socket = io('http://cjohnson.ignorelist.com:8090');
+const socket = io('http://localhost:8090');
 //  create the store, add middleware to it, and dispatch an action?
 const createStoreWithMiddleware = applyMiddleware(
   remoteActionMiddleware(socket)

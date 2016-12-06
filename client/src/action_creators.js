@@ -1,4 +1,5 @@
 
+//  Set the states that come down from the server
 //	checked
 export function setState (newState) {
 	return {
@@ -6,8 +7,9 @@ export function setState (newState) {
 		value: newState
 	};
 }
+///////////////////////////////////////////////
 
-
+//  AutocompleteField component specific
 //	checked
 export function setAutocompleteField (value) {
 	return {
@@ -15,7 +17,6 @@ export function setAutocompleteField (value) {
 		value: value
 	}
 }
-
 
 export function cancelHideAutocompletes () {
   return {
@@ -46,7 +47,6 @@ export function setAutocompletes(array) {
   };
 }
 
-
 export function setVis (bool) {
   return {
     type: 'AUTOCOMPLETES_VISIBLE',
@@ -59,7 +59,9 @@ export function countdown (id) {
     value: id
   };
 }
+///////////////////////////////////////////////
 
+//  for search bar on landing page/ticket list
 export function setSearch (name, value) {
   return {
     type: 'SET_SEARCH',
@@ -67,8 +69,6 @@ export function setSearch (name, value) {
     value: value
   };
 }
-
-
 
 
 export function before (date) {
@@ -91,7 +91,9 @@ export function search(query) {
     meta: { remote: true, db: true }
   };
 }
+///////////////////////////////////////////////
 
+//  for setting props on tickets
 //	checked
 export function setProp(name, value) {
 	console.log('setProp: ', name, value);
@@ -102,8 +104,10 @@ export function setProp(name, value) {
     value: value
   };
 }
+///////////////////////////////////////////////
 
 
+//  button bar dispatchers to create and edit tickets
 //	needs to be modified
 export function saveTicket() {
   return {
@@ -128,7 +132,6 @@ export function create() {
   }
 }
 
-
 //	checked
 export function showModal(bool) {
   return {
@@ -136,3 +139,4 @@ export function showModal(bool) {
     value: bool
   };
 }
+///////////////////////////////////////////////
