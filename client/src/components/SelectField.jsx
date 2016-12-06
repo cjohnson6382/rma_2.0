@@ -8,8 +8,7 @@ export default React.createClass({
     this.props.setProp(evt.target.attributes.name.value, evt.target.value);
   },
   getVal: function () {
-		console.log(this.props.ticket.get(this.props.name));
-    return this.props.ticket.toJS()[this.props.name];
+    return this.props.ticket[this.props.name];
   },
   render: function () {
     let options = this.props.options.map((option, index) => {
@@ -25,7 +24,7 @@ export default React.createClass({
             placeholder={ this.props.name}
             name={ this.props.name }
             onChange={ this.setProp }
-            value={ this.props.ticket.get(this.props.name) }
+            value={ this.props.ticket[this.props.name] }
           >
             { options }
           </FormControl>

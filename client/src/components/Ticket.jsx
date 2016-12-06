@@ -26,10 +26,12 @@ export const Ticket = React.createClass({
     this.props.setProp([prop, value]);
   },
 	render: function () {
+    console.log('rendering Ticket: this.props.ticket', this.props.ticket);
+
 		return (
 			<Form horizontal onSubmit={ this.submit } autoComplete="off" >
-				<StaticInputField val={ this.props.ticket.get('id') } name='id' type='text' />
-				<StaticInputField val={ this.props.ticket.get('date')} name='date' type='date' />
+				<StaticInputField val={ this.props.ticket.id } name='id' type='text' />
+				<StaticInputField val={ this.props.ticket.date } name='date' type='date' />
 				<SelectField  {...this.props} controlId="typeSelect" name="type" options={ [
 				    "DOA - Cross Ship", "Warranty - Repair & Return", "Warranty - Cross Ship", "Non-Warranty - Repair & Return", "Other - See Notes"
 			    ] }

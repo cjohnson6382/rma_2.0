@@ -29,8 +29,7 @@ export const TicketList = React.createClass({
 	},
   buildList: function () {
     const ticketJst = this.getList().map((ticket) => {
-			ticket = ticket.toJS();
-
+			// ticket = ticket.toJS();
 			let date = new Date(ticket.date).toISOString().substring(0, 10);
       return (
         <tr onClick={ this.getTicket } key={ ticket.id } value={ ticket.id } >

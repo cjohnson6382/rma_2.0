@@ -7,7 +7,7 @@ export default React.createClass({
     this.props.setProp(evt.target.attributes.name.value, evt.target.value);
   },
 	getVal: function () {
-		return this.props.ticket.toJS()[this.props.name];
+		return this.props.ticket[this.props.name];
 	},
   render: function () {
     return (

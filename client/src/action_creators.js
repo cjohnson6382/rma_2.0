@@ -1,9 +1,10 @@
 
 //  Set the states that come down from the server
 //	checked
-export function setState (newState) {
+export function setState (path, newState) {
 	return {
 		type: 'SET_STATE',
+    path: path,
 		value: newState
 	};
 }
@@ -11,10 +12,12 @@ export function setState (newState) {
 
 //  AutocompleteField component specific
 //	checked
-export function setAutocompleteField (value) {
+export function setAutocompleteField (field, value) {
 	return {
 		type: 'SET_AUTOCOMPLETE_FIELD',
-		value: value
+    field: field,
+		value: value,
+    meta: { remote: true }
 	}
 }
 

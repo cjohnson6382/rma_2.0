@@ -29,8 +29,8 @@ function setTicketProp(state, name, value) {
   return state.setIn(['ticket', name], value);
 }
 
-function setAutocompleteField(state, value) {
-	return state.setIn(['ui', 'input'], value);
+function setAutocompleteField(state, field, value) {
+	return state.setIn(['ticket', field], value);
 }
 
 function saveTicket(state) {
@@ -55,8 +55,10 @@ function create(state, action) {
   return state;
 }
 
-function setState (state, newState) {
-  return state.merge(newState);
+function setState (state, path, newState) {
+  console.log('reducer called setState', path, newState);
+  return state.set(path, newState);
+  //  return state.merge(newState);
 }
 
 const INITIAL_STATE = Map({ 
@@ -67,13 +69,13 @@ const INITIAL_STATE = Map({
 export default function(state = INITIAL_STATE, action) {
   switch (action.type) {
   	case 'SET_STATE':
-  	  return setState(state, action.value);
+  	  return setState(state, action.path, action.value);
   	case 'SEARCH_TICKETS':
   	  return search(state, action);
   	case 'SET_PROP':
   	  return setTicketProp(state, action.name, action.value);
 		case 'SET_AUTOCOMPLETE_FIELD':
-			return setAutocompleteField(state, action.value);
+			return setAutocompleteField(state, action.field, action.value);
   	case 'SAVE_TICKET':
   	  return saveTicket(state);
   	case 'GET_TICKET':

@@ -5,7 +5,7 @@ import {Popover, Overlay, FormGroup, FormControl, ControlLabel, Col} from 'react
 
 const CustomPopover = React.createClass({
 	select: function (evt) {
-		this.props.setAutocompleteField(evt.currentTarget.attributes.value.value);
+		this.props.setAutocompleteField(this.props.name, evt.currentTarget.attributes.value.value);
 		//	this.props.setAutocompletes([]);
 		this.props.setVis(false);
 	},
@@ -35,34 +35,24 @@ const CustomPopover = React.createClass({
 	}
 });
 
+
+//	setup client index to check state when it gets a server emit; if setVis = true, ignore 'state' updates and only do 'autocompletes' updates
+
 export default React.createClass({
 	mixins: [PureRenderMixin],
-	componentWillReceiveProps: function () { 
-
-		//	okay, problem is that when the setAutocompleteField fires, it's getting information from an old ticket....
-
-		//	I needed this.props.input in the first place because the server was sending down autocomplete options which reset the ticket state
-		//	I think th best option is to send the server the autocompletefield with every keypress; that simplifies things a lot
-		
-
-		console.log(this.props.setAutocompleteField);
-		this.props.setAutocompleteField(this.props.ticket.get(this.props.name)) 
-		console.log('componentWillReceiveProps fired: ', this.props.ticket.get(this.props.name));
-		setTimeout(() => console.log(this.props.input), 1000);
-	},
 	update: function (evt) {
 		evt.preventDefault();
 		if (
 				evt.target.value === '' || 
-				this.props.input && 
-				this.props.input.includes(evt.target.value)
+				this.props.ticket[this.props.name] && 
+				this.props.ticket[this.props.name].includes(evt.target.value)
 			) 
 		{ 
 			this.props.setAutocompletes([]);
 		}
 		else {
-			if (evt.target.value.includes(this.props.input) && this.props.autocompletes.count < 15) {
-				console.log('getting to the filter option', this.props.input, evt.target.value);
+			if (evt.target.value.includes(this.props.ticket[this.props.name]) && this.props.autocompletes.count < 15) {
+				console.log('getting to the filter option', this.props.ticket[this.props.name], evt.target.value);
 				let newAutocompletes = this.props.autocompletes.filter((item) => { 
 					return item.includes(evt.target.value) 
 				});
@@ -75,7 +65,7 @@ export default React.createClass({
 				this.props.setVis(true);
 			}
 		}
-		this.props.setAutocompleteField(evt.target.value);
+		this.props.setAutocompleteField(this.props.name, evt.target.value);
 	},
 	onKeyPress: function (evt) {
 		if (evt.charCode == 13) this.props.setAutocompletes([]);
@@ -83,7 +73,7 @@ export default React.createClass({
 	selectAutocomplete: function (evt) {
 		evt.preventDefault();
 		this.props.setAutocompletes([]);
-		this.props.setAutocompleteField(evt.target.innerText);
+		this.props.setAutocompleteField(this.props.name, evt.target.innerText);
 	},
 	cancelHideAutocompletes: function () {
 		console.log('cancelHideAutocompletes');
@@ -105,7 +95,7 @@ export default React.createClass({
 						placeholder={ this.props.name }
 						onKeyPress={ this.onKeyPress }
 						onChange={ this.update }
-						value = { this.props.input }
+						value = { this.props.ticket[this.props.name] }
 					/>
 					<Overlay
 						show={ this.props.autocompletes_visible }
