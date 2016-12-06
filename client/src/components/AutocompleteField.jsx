@@ -42,18 +42,27 @@ export default React.createClass({
 		evt.preventDefault();
 		let stored_input = this.props.input;
 
-    if (evt.target.value === '') {
-			this.props.setAutocompletes([]);
-		} else if (stored_input !== '' && evt.target.value.includes(stored_input)) {
+		if (evt.target.value === '') { this.props.getOptions(this.props.name, evt.target.value) }
+		//	if the new input is different from the old input, get new options
+		else if (!this.props.input.includes(evt.target.value)) { this.props.getOptions(this.props.name, evt.target.value)} 
+		else if (evt.target.value.includes(this.props.input)) {
+			if (this.props.autocompletes.count < 15) {
+      	let newAutocompletes = this.props.autocompletes.filter((item) => { return item.includes(evt.target.value) });
+			})
+			
+
+			console.log('filtering autocomplete results');
       //  filter existing results
       let newAutocompletes = this.props.autocompletes.filter((item) => { return item.includes(evt.target.value) });
-			
+			console.log('newAutocompletes', newAutocompletes);	
       //  filtering returned too few results, and there might be other results in the DB
       if (this.props.autocompletes.count() > 14 && newAutocompletes.count() < 5) { 
 				this.props.getOptions(this.props.name, evt.target.value); 
 			}
       else { this.props.setAutocompletes(newAutocompletes) }
 			this.props.setVis(true);
+
+
 		} else if (stored_input.includes(evt.target.value)) {
 			this.props.setVis(false);
       //  user deleted character; clear results
